@@ -2,9 +2,10 @@ import { IconChevronDown } from '@tabler/icons-react';
 import { Burger, Center, Container, Group, Menu } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import classes from '../assets/css/HeaderMenu.module.css';
+import Logo from '../assets/images/Logo.png'
 
 const links = [
-  { link: '/about', label: 'Features' },
+  { link: '/about', label: 'About' },
   {
     link: '#2',
     label: 'Switch User',
@@ -61,7 +62,12 @@ export function Navbar() {
     <header className={classes.header}>
       <Container size="md">
         <div className={classes.inner}>
-          {/* <MantineLogo size={28} />/ */}
+          <img
+            src={Logo}
+            alt="Logo"
+            style={{ height: 50 }}
+            />
+
           <Group gap={5} visibleFrom="sm">
             {items}
           </Group>

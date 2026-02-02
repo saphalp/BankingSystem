@@ -4,6 +4,7 @@ import { useState } from 'react'
 import './App.css'
 import { MantineProvider } from '@mantine/core'
 import { Navbar } from './components/Navbar'
+import LandingPageCustomer from './components/LandingPageCustomer'
 
 function App() {
   // const [count, setCount] = useState(0)
@@ -12,6 +13,7 @@ function App() {
     <>
     <MantineProvider>
       <Navbar/>
+      <LandingPageCustomer/>
     </MantineProvider>
 </>
   )
