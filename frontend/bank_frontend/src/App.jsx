@@ -5,17 +5,22 @@ import './App.css'
 import { MantineProvider } from '@mantine/core'
 import { Navbar } from './components/Navbar'
 import LandingPageCustomer from './components/LandingPageCustomer'
+import { LoginForm } from './components/LoginForm'
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
 
 function App() {
   // const [count, setCount] = useState(0)
 
   return (
-    <>
-    <MantineProvider>
-      <Navbar/>
-      <LandingPageCustomer/>
-    </MantineProvider>
-</>
+   <BrowserRouter>
+      <MantineProvider withGlobalStyles withNormalizeCSS>
+        <Navbar />
+        <Routes>
+          <Route path="/" element={<LandingPageCustomer />} />
+          <Route path="/login" element={<LoginForm />} />
+        </Routes>
+      </MantineProvider>
+    </BrowserRouter>
   )
 }
 

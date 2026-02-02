@@ -1,7 +1,10 @@
 import { Button, Container, Text, Title } from '@mantine/core';
 import classes from '../assets/css/HeroImageRight.module.css';
+import { useNavigate } from 'react-router-dom';
+
 
 export function HeroBanner() {
+    const navigate = useNavigate();
   return (
     <div className={classes.root}>
       <Container size="lg">
@@ -19,7 +22,7 @@ export function HeroBanner() {
               </Text>{' '}
             </Title>
 
-            <Text className={classes.description} mt={40} c={"white"}>
+            <Text className={classes.description} mt={30} c={"white"}>
               Manage, grow, and protect your money with secure, intuitive tools built for everyday life.
             </Text>
 
@@ -29,6 +32,7 @@ export function HeroBanner() {
               size="xl"
               className={classes.control}
               mt={40}
+              onClick={()=>navigate('/login')}
             >
                 Create an Account
             </Button>
