@@ -34,7 +34,7 @@ export function HeroBanner() {
               mt={40}
               onClick={()=>navigate('/login')}
             >
-                Create an Account
+                View My Account
             </Button>
           </div>
         </div>

@@ -3,6 +3,7 @@ import { Burger, Center, Container, Group, Menu } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import classes from '../assets/css/HeaderMenu.module.css';
 import Logo from '../assets/images/Logo.png'
+import { useNavigate } from 'react-router-dom';
 
 const links = [
   { link: '/about', label: 'About' },
@@ -20,7 +21,7 @@ const links = [
 
 export function Navbar() {
   const [opened, { toggle }] = useDisclosure(false);
-
+  const navigate = useNavigate();
   const items = links.map((link) => {
     const menuItems = link.links?.map((item) => (
       <Menu.Item key={item.link}>{item.label}</Menu.Item>
@@ -66,6 +67,7 @@ export function Navbar() {
             src={Logo}
             alt="Logo"
             style={{ height: 50 }}
+            onClick={()=>navigate('/')}
             />
 
           <Group gap={5} visibleFrom="sm">

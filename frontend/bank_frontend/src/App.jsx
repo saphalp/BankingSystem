@@ -6,6 +6,7 @@ import { MantineProvider } from '@mantine/core'
 import { Navbar } from './components/Navbar'
 import LandingPageCustomer from './components/LandingPageCustomer'
 import { LoginForm } from './components/LoginForm'
+import { SignUpForm } from './components/SignUpForm'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
         <Routes>
           <Route path="/" element={<LandingPageCustomer />} />
           <Route path="/login" element={<LoginForm />} />
+          <Route path="/signup" element={<SignUpForm/>} />
         </Routes>
       </MantineProvider>
     </BrowserRouter>

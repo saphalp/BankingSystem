@@ -9,8 +9,10 @@ import {
   Title,
 } from '@mantine/core';
 import classes from '../assets/css/LoginPage.module.css';
+import { useNavigate } from 'react-router-dom';
 
 export function LoginForm() {
+ const navigate = useNavigate()
   return (
     <Container size={420} my={40}>
       <Title ta="center" className={classes.title}>
@@ -18,7 +20,7 @@ export function LoginForm() {
       </Title>
 
       <Text className={classes.subtitle}>
-        Do not have an account yet? <Anchor>Create account</Anchor>
+        Do not have an account yet? <Anchor onClick={()=>navigate('/signup')}>Create account</Anchor>
       </Text>
 
       <Paper withBorder shadow="sm" p={22} mt={30} radius="md">
