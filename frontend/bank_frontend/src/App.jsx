@@ -2,24 +2,33 @@ import { useState } from 'react'
 // import reactLogo from './assets/react.svg'
 // import viteLogo from '/vite.svg'
 import './App.css'
-import { MantineProvider } from '@mantine/core'
+import { createTheme, MantineProvider } from '@mantine/core'
 import { Navbar } from './components/Navbar'
 import LandingPageCustomer from './components/LandingPageCustomer'
 import { LoginForm } from './components/LoginForm'
 import { SignUpForm } from './components/SignUpForm'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import CustomerAccountManagement from './components/CustomerAccountManagement'
+import CustomerProfilePage from './components/CustomerProfilePage'
+
+const theme = createTheme({
+  fontFamily: 'Open Sans, sans-serif',
+  primaryColor: 'cyan',
+});
 
 function App() {
   // const [count, setCount] = useState(0)
 
   return (
    <BrowserRouter>
-      <MantineProvider withGlobalStyles withNormalizeCSS>
+      <MantineProvider theme={theme} >
         <Navbar />
         <Routes>
           <Route path="/" element={<LandingPageCustomer />} />
           <Route path="/login" element={<LoginForm />} />
           <Route path="/signup" element={<SignUpForm/>} />
+          <Route path="/customer_service" element={<CustomerAccountManagement/>} />
+          <Route path="/account_management" element={<CustomerProfilePage/>} />
         </Routes>
       </MantineProvider>
     </BrowserRouter>

@@ -11,8 +11,8 @@ const links = [
     link: '#2',
     label: 'Switch User',
     links: [
-      { link: '/faq', label: 'Customer' },
-      { link: '/demo', label: 'Customer Service' },
+      { link: '/account_management', label: 'Customer' },
+      { link: '/customer_service', label: 'Customer Service' },
       { link: '/forums', label: 'Loan Officer'},
       { link: '/forums', label: 'Bank Manager'},
     ],
@@ -24,7 +24,7 @@ export function Navbar() {
   const navigate = useNavigate();
   const items = links.map((link) => {
     const menuItems = link.links?.map((item) => (
-      <Menu.Item key={item.link}>{item.label}</Menu.Item>
+      <Menu.Item key={item.link} onClick={()=>navigate(item.link)}>{item.label}</Menu.Item>
     ));
 
     if (menuItems) {
@@ -32,9 +32,7 @@ export function Navbar() {
         <Menu key={link.label} trigger="hover" transitionProps={{ exitDuration: 0 }} withinPortal>
           <Menu.Target>
             <a
-              href={link.link}
               className={classes.link}
-              onClick={(event) => event.preventDefault()}
             >
               <Center>
                 <span className={classes.linkLabel}>{link.label}</span>
@@ -50,9 +48,8 @@ export function Navbar() {
     return (
       <a
         key={link.label}
-        href={link.link}
         className={classes.link}
-        onClick={(event) => event.preventDefault()}
+        onClick={()=>navigate(link.link)}
       >
         {link.label}
       </a>
