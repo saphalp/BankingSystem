@@ -1,7 +1,10 @@
 import { SegmentedControl } from '@mantine/core';
 import classes from '../assets/css/AccountSelection.module.css';
+import { useState } from 'react';
 
-export function AccountSelection() {
+
+export function AccountSelection({accountType, setAccountType}) {
+  
   return (
     <SegmentedControl
       radius="xl"
@@ -9,6 +12,8 @@ export function AccountSelection() {
       mt={20}
       data={['Savings', 'Checking']}
       classNames={classes}
+      defaultValue={accountType}
+      onChange={(e)=>setAccountType(e)}
     />
   );
 }
