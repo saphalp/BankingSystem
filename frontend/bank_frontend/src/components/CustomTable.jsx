@@ -3,7 +3,7 @@ import { Button, Container, Group, Table } from '@mantine/core';
 export function CustomTable({table_layout, table_data}) {
 
   const buttons = table_layout.buttons?table_layout.buttons.map((e, index)=>(
-    <Button key={index} size='compact-sm'>{e}</Button>
+    <Button key={index} size='compact-sm' bg={e.color} onClick={e.onclick_function}>{e.label}</Button>
   )):<></>
 
   

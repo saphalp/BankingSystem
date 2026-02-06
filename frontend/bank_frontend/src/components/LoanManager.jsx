@@ -3,9 +3,28 @@ import React from 'react'
 import { CustomTable } from './CustomTable'
 
 function LoanManager() {
+
+    const approve_loan = () => {
+      console.log("Approve Loan");
+    }
+    const decline_loan = () => {
+      console.log("Decline Loan");
+    }
+
     const table_layout = {
         heads : ["LoanID", "Applicant", "Loan Type", "Term (years)", "Interest"],
-        buttons : ["Approve", "Decline"]
+        buttons : [
+          {
+            label: "Approve",
+            color: "green",
+            onclick_function: approve_loan
+          },
+          {
+            label: "Decline",
+            color: "red",
+            onclick_function: decline_loan
+          }
+        ]
     }
 
     const loan_data = [

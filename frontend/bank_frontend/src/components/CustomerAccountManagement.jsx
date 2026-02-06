@@ -3,9 +3,27 @@ import { CustomTable } from './CustomTable'
 import { Container, Title, Center } from '@mantine/core'
 
 function CustomerAccountManagement() {
+   const close_account = () => {
+      console.log("close_account")
+   }
+
+   const issue_debit_card = () => {
+      console.log("issue_debit_card")
+   }
    const account_mgmt_table = {
         heads : ["Account Holder", "Account Number", "Account Type", "Balance"],
-        buttons : ["Close Account", "Issue Debit Card"]
+        buttons : [
+          {
+            label: "Issue Debit Card",
+            color: "blue",
+            onclick_function: issue_debit_card
+          },
+          {
+            label: "Close Account",
+            color: "red",
+            onclick_function: close_account
+          }
+        ]
     }
 
     const accounts_data = [
