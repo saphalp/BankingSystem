@@ -2,8 +2,20 @@ import React from 'react'
 import LoanForm from './LoanForm'
 import { Center, Container, Badge, Title, Text, SimpleGrid, Image, Space } from '@mantine/core'
 import { CustomTable } from './CustomTable'
+import MakeTransaction from './MakeTransaction'
 
 function CustomerProfilePage() {
+ const transactions_table = {
+        heads : ["ID", "Date", "Account", "Amount"],
+        buttons : null
+    }
+
+ const transaction_data = [
+    [11, "09/24/2003", "192192190347", "$394235"],
+    [12, "09/24/2023", "124342342545", "$142534"],
+    [13, "09/24/2012", "252354252525", "$456477"],
+    [14, "09/24/2024", "252532524566", "$6356"],
+ ]
   return (
     <>
     <Container my={50}>
@@ -16,8 +28,11 @@ function CustomerProfilePage() {
         </Title>
     <Container mt={50}>
             <Title order={3}>Recent Transactions</Title>
-        <CustomTable/>
+        <CustomTable table_layout={transactions_table} table_data={transaction_data}/>
     </Container>
+        <Container mt={100}>
+            <MakeTransaction/>
+        </Container>
     <Container mt={100}>
     <SimpleGrid cols={2}>    
     <div>

@@ -13,7 +13,7 @@ const links = [
     links: [
       { link: '/account_management', label: 'Customer' },
       { link: '/customer_service', label: 'Customer Service' },
-      { link: '/forums', label: 'Loan Officer'},
+      { link: '/loan_management', label: 'Loan Officer'},
       { link: '/forums', label: 'Bank Manager'},
     ],
   },

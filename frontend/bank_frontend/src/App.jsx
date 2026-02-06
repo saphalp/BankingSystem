@@ -10,6 +10,7 @@ import { SignUpForm } from './components/SignUpForm'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import CustomerAccountManagement from './components/CustomerAccountManagement'
 import CustomerProfilePage from './components/CustomerProfilePage'
+import LoanManager from './components/LoanManager'
 
 const theme = createTheme({
   fontFamily: 'Open Sans, sans-serif',
@@ -29,6 +30,7 @@ function App() {
           <Route path="/signup" element={<SignUpForm/>} />
           <Route path="/customer_service" element={<CustomerAccountManagement/>} />
           <Route path="/account_management" element={<CustomerProfilePage/>} />
+          <Route path="/loan_management" element={<LoanManager/>} />
         </Routes>
       </MantineProvider>
     </BrowserRouter>
