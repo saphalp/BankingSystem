@@ -4,7 +4,7 @@ import './index.css'
 import App from './App.jsx'
 import '@mantine/core/styles.css';
 import { BrowserRouter } from 'react-router-dom';
-
+import '@mantine/charts/styles.css';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

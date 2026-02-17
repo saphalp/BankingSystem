@@ -1,14 +1,14 @@
-import { Container } from '@mantine/core'
+import { Container, Title, Center } from '@mantine/core'
 import React from 'react'
 import { CustomTable } from './CustomTable'
 
 function LoanManager() {
 
-    const approve_loan = () => {
-      console.log("Approve Loan");
+    const approve_loan = (row) => {
+      console.log(`Approve loan for ${JSON.stringify(row)}`);
     }
-    const decline_loan = () => {
-      console.log("Decline Loan");
+    const decline_loan = (row) => {
+      console.log(`Decline loan for ${JSON.stringify(row)}`);
     }
 
     const table_layout = {
@@ -32,6 +32,9 @@ function LoanManager() {
     ]
   return (
     <Container my={50}>
+      <Center>
+          <Title>Review Loan Requests</Title>
+      </Center>
         <CustomTable table_layout={table_layout} table_data={loan_data}/>
     </Container>
   )

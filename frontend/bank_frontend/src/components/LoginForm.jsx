@@ -7,6 +7,7 @@ import {
   Text,
   TextInput,
   Title,
+  Alert
 } from '@mantine/core';
 import classes from '../assets/css/LoginPage.module.css';
 import { useNavigate } from 'react-router-dom';
@@ -16,8 +17,10 @@ import axios from "axios";
 
 export function LoginForm() {
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-
+  const [password, setPassword] = useState(null);
+  const [errorMsg, setError] = useState()
+  const navigate = useNavigate()
+  
   const submitLogin = async (e) => {
   e.preventDefault();
   try {
@@ -30,19 +33,38 @@ export function LoginForm() {
         },
       }
     );
+    if(res.status==200){
+      setError(null)
+      const data = res.data
+      localStorage.setItem("cid", data.ssn)
+      navigate('/account_management')
+    }
+    else{
+      console.log("Some error")
+    }
   } catch (err) {
     if (err.response) {
-      console.error("Login error:", err.response.data);
+      setError(err.response.data.error);
     } else {
-      console.error("Network error:", err.message);
+      setError(err.response.data.error);
     }
   }
 };
 
 
- const navigate = useNavigate()
   return (
     <Container size={420} my={40}>
+      {errorMsg ? (
+        <Alert 
+          variant="light" 
+          color="red" 
+          title="Trouble logging in" 
+          icon={null}
+          mb={20}
+        >
+          {errorMsg}
+        </Alert>
+      ) : null}
       <Title ta="center" className={classes.title}>
         Welcome back!
       </Title>

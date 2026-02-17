@@ -1,20 +1,48 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { CustomTable } from './CustomTable'
 import { Container, Title, Center } from '@mantine/core'
+import axios from "axios";
+
+
 
 function CustomerAccountManagement() {
-   const close_account = () => {
-      console.log("close_account")
+  const [accounts, setAccounts] = useState()
+   const close_account = async (row) => {
+      try{
+        const res = await axios.delete(`http://127.0.0.1:5000/update_account/${row.row[2]}`);
+      } catch(err){
+        console.error(err.response?.data || err.message);
+      }
    }
 
-   const issue_debit_card = () => {
-      console.log("issue_debit_card")
+   const issue_debit_card = async (row) => {
+      try{
+        const res = await axios.patch(`http://127.0.0.1:5000/update_account/${row.row[2]}`);
+      } catch(err){
+        console.error(err.response?.data || err.message);
+      }
    }
+
+   useEffect(() => {
+    const fetchAllUsers = async () => {
+      try {
+      const res = await axios.get(
+        `http://127.0.0.1:5000/get_accounts`
+      );
+      setAccounts(res.data)
+    } catch (err) {
+      console.error(err.response?.data || err.message);
+    }
+    }
+    fetchAllUsers();
+   }, [])
+
+   
    const account_mgmt_table = {
-        heads : ["Account Holder", "Account Number", "Account Type", "Balance"],
+        heads : ["Account Holder", "Debit Card Number", "Account Number", "Account Type", "Balance"],
         buttons : [
           {
-            label: "Issue Debit Card",
+            label: "Issue Debit",
             color: "blue",
             onclick_function: issue_debit_card
           },
@@ -33,14 +61,19 @@ function CustomerAccountManagement() {
       ["Banye West", "3467456468", "Checking", "43564576"]
     ]
 
-  return (
-    <Container my={50}>
+    return (
+  <Container my={30}>
     <Center>
-    <Title>Manage Customer Accounts</Title>
+      <Title>Manage Customer Accounts</Title>
     </Center>
-    <CustomTable table_layout={account_mgmt_table} table_data={accounts_data}/>
-    </Container>
-  )
+    {accounts?
+    <CustomTable
+      table_layout={account_mgmt_table}
+      table_data={accounts}
+    />: <></>}
+  </Container>
+) 
+
 }
 
 export default CustomerAccountManagement

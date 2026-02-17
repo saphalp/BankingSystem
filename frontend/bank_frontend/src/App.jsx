@@ -11,6 +11,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import CustomerAccountManagement from './components/CustomerAccountManagement'
 import CustomerProfilePage from './components/CustomerProfilePage'
 import LoanManager from './components/LoanManager'
+import BankManager from './components/BankManager'
 
 const theme = createTheme({
   fontFamily: 'Open Sans, sans-serif',
@@ -18,8 +19,6 @@ const theme = createTheme({
 });
 
 function App() {
-  // const [count, setCount] = useState(0)
-
   return (
    <BrowserRouter>
       <MantineProvider theme={theme} >
@@ -31,6 +30,7 @@ function App() {
           <Route path="/customer_service" element={<CustomerAccountManagement/>} />
           <Route path="/account_management" element={<CustomerProfilePage/>} />
           <Route path="/loan_management" element={<LoanManager/>} />
+          <Route path="/bank_management" element={<BankManager/>} />
         </Routes>
       </MantineProvider>
     </BrowserRouter>
