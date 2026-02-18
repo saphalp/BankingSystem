@@ -8,9 +8,33 @@ import axios from 'axios'
 
 function BankManager() {
     const role = localStorage.getItem("role")
-    const update_role = (row) => {
-        console.log(`Role updated to ${JSON.stringify(row)}`);
+    const [employees, setEmployees] = useState()
+    const update_role = async (row) => {
+      try{
+          const res = await axios.patch(`http://127.0.0.1:5000/update_role`, {'eid':row.row[0], 'new_role':row.selectedValue})
+          if(res.status==200){
+            alert("Role updated succesfully")
+            fetchEmployees()
+          }
+        } catch(err){
+          console.log(err)
+        }
     }
+
+    const fetchEmployees = async () => {
+      try{
+        const res = await axios.get(`http://127.0.0.1:5000/get_employees`)
+        console.log(res.data)
+        setEmployees(res.data)
+      }
+      catch(err){
+        console.log(err)
+      }
+    }
+
+    useEffect(()=>{
+      fetchEmployees()
+    },[])
 
     const user_table={
         heads : ["UserID", "Name", "Email", "Role"],
@@ -38,7 +62,7 @@ function BankManager() {
         <Center my={100}>
             <Title>Manage Users</Title>
         </Center>
-        <CustomTable table_layout={user_table} table_data={user_data}/>
+        {employees?<CustomTable table_layout={user_table} table_data={employees}/>:null}
     </Container>: null}
     </>
   )

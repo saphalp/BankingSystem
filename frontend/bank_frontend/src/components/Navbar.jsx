@@ -1,5 +1,5 @@
 import { IconChevronDown } from '@tabler/icons-react';
-import { Burger, Center, Container, Group, Menu } from '@mantine/core';
+import { Title, Burger, Center, Container, Group, Menu, Button } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import classes from '../assets/css/HeaderMenu.module.css';
 import Logo from '../assets/images/Logo.png'
@@ -7,16 +7,6 @@ import { useNavigate } from 'react-router-dom';
 
 const links = [
   { link: '/about', label: 'About' },
-  {
-    link: '#2',
-    label: 'Switch User',
-    links: [
-      { link: '/account_management', label: 'Customer' },
-      { link: '/customer_service', label: 'Customer Service' },
-      { link: '/loan_management', label: 'Loan Officer'},
-      { link: '/bank_management', label: 'Bank Manager'},
-    ],
-  },
 ];
 
 export function Navbar() {
@@ -60,15 +50,21 @@ export function Navbar() {
     <header className={classes.header}>
       <Container size="md">
         <div className={classes.inner}>
-          <img
-            src={Logo}
-            alt="Logo"
-            style={{ height: 50 }}
-            onClick={()=>navigate('/')}
-            />
+          <Title
+            order={2}
+            style={{ fontWeight: 600, letterSpacing: "1px" }}
+          >
+            Fantastic
+            <span style={{ color: "#228be6" }}>Five</span> Bank
+          </Title>
 
           <Group gap={5} visibleFrom="sm">
             {items}
+            {localStorage.getItem("cid")||localStorage.getItem("role")?
+            <Button onClick={()=>{
+              localStorage.clear();
+              navigate("/")
+            }}>Logout</Button>:null}
           </Group>
           <Burger
             opened={opened}

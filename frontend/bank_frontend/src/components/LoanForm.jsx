@@ -17,7 +17,11 @@ const handleSubmit = async (e) => {
         loan_term: loanTerm,
       }
     );
-    alert(`Loan applied successfully!`);
+    if(res.status==201){
+      alert(`Loan applied successfully!`);
+      setLoanAmt()
+      setLoanTerm()
+    }
   } catch (err) {
     if (err.response) {
       console.error("Error applying loan:", err.response.data);

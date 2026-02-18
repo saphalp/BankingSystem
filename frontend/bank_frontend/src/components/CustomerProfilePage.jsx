@@ -11,8 +11,6 @@ function CustomerProfilePage() {
 const [userData, setUserData] = useState(null);
 const [transactionData, setTransactionData] = useState(null);
 
-
-useEffect(() => {
   const fetchUser = async () => {
     try {
       const cid = localStorage.getItem("cid");
@@ -40,6 +38,7 @@ useEffect(() => {
     }
   }
 
+useEffect(() => {
   fetchUser();
   fetchTransactions();
 }, []);
@@ -66,7 +65,7 @@ useEffect(() => {
         {transactionData?<CustomTable table_layout={transactions_table} table_data={transactionData}/>:<></>}
     </Container>
         <Container mt={100}>
-            <MakeTransaction user_acc = {userData.accounts[0]} balance={userData.balance}/>
+            <MakeTransaction user_acc = {userData.accounts[0]} balance={userData.balance} fetchTransactions={fetchTransactions}/>
         </Container>
     <Container mt={100}>
     <SimpleGrid cols={2}>    

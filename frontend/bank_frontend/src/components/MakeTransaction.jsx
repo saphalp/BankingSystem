@@ -4,7 +4,7 @@ import axios from "axios";
 import { use } from 'react';
 
 
-function MakeTransaction({user_acc, balance}) {
+function MakeTransaction({user_acc, balance, fetchTransactions}) {
     const [type, setType] = useState('transfer');
     const [amount, setAmount] = useState();
     const [accNumber, setAccNumber] = useState();
@@ -42,6 +42,7 @@ const fetchLoanIDs = async () => {
       setAmount();
       setAccNumber("");
       setRoutNumber("");
+      fetchTransactions();
     } catch (err) {
       console.log(err.response?.data?.error || err.message);
     }

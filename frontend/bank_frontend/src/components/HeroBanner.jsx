@@ -32,7 +32,22 @@ export function HeroBanner() {
               size="xl"
               className={classes.control}
               mt={40}
-              onClick={()=>navigate('/login')}
+              onClick={()=>
+              {
+                const cid = localStorage.getItem("cid");
+                const role = localStorage.getItem("role");
+
+                if (!cid && !role) {
+                  navigate("/login");
+                } else {
+                  // Navigate based on role
+                  if (cid) navigate("/customer-dashboard");
+                  else if (role === "Loan Manager") navigate("/loan_management");
+                  else if (role === "Bank Manager") navigate("/bank_management");
+                  else if (role === "Customer Service") navigate("/customer_service");
+                  else navigate("/"); // fallback
+                }
+              }}
             >
                 View My Account
             </Button>

@@ -24,7 +24,7 @@ def login():
     cursor = conn.cursor(dictionary=True)
 
     try:
-        if (email.split('@')[1=='fantasticfive.com']): 
+        if (email.split('@')[1]=='fantasticfive.com'): 
             query = "SELECT eid, job_role FROM employee WHERE email = %s AND password = %s"
             cursor.execute(query, (email, password))
             employee = cursor.fetchone()
@@ -103,7 +103,7 @@ def register():
 
         return jsonify({
             "message": "Account created successfully",
-        }), 201
+        }), 200
 
     except Exception as e:
         conn.rollback()
@@ -446,13 +446,33 @@ def get_analytics():
         return "Error fetching analytics"
     
 @app.route('/get_employees', methods=['GET'])
-def get_analytics():
+def get_employees():
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
-        cursor.execute("SELECT eid, full_name, email, job_role FROM fantastic_five.employee WHERE job_role!='Bank Manager")
+        cursor.execute("SELECT eid, full_name, email, job_role FROM fantastic_five.employee WHERE job_role!='Bank Manager'")
         result = cursor.fetchall()
+        cursor.close()
+        conn.close()
         return result
+    except:
+        return "Error fetching employees"
+    
+@app.route('/update_role', methods=['PATCH'])
+def update_role():
+    try:
+        data = request.json
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        eid = data['eid']
+        new_role = data['new_role']
+        query = """
+        UPDATE employee SET job_role=%s WHERE eid=%s
+        """
+        cursor.execute(query, (new_role, eid))
+        conn.commit()
+        conn.close()
+        return "Updated employee role"
     except:
         return "Error fetching employees"
 
