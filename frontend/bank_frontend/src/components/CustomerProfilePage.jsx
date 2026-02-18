@@ -34,7 +34,6 @@ useEffect(() => {
       const res = await axios.get(
         `http://127.0.0.1:5000/get_transactions/${cid}`
       );
-    //   console.log(res.data.transactions)
       setTransactionData(res.data.transactions)
     } catch(err){
         console.error(err.response?.data || err.message);
@@ -67,7 +66,7 @@ useEffect(() => {
         {transactionData?<CustomTable table_layout={transactions_table} table_data={transactionData}/>:<></>}
     </Container>
         <Container mt={100}>
-            <MakeTransaction user_acc = {userData.accounts[0]}/>
+            <MakeTransaction user_acc = {userData.accounts[0]} balance={userData.balance}/>
         </Container>
     <Container mt={100}>
     <SimpleGrid cols={2}>    

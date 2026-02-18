@@ -20,26 +20,34 @@ def login():
     data = request.json
     email = data['email']
     password = data['password']
-
-    if not email or not password:
-        return jsonify({"error": "Email and password required"}), 400
-
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
 
     try:
-        query = "SELECT ssn, fname, lname FROM customer WHERE email = %s AND password = %s"
-        cursor.execute(query, (email, password))
-        customer = cursor.fetchone()
-
-        if customer:
-            return jsonify({
-                "ssn": customer['ssn'],
-                "fname": customer['fname'],
-                "lname": customer['lname']
-            }), 200
+        if (email.split('@')[1=='fantasticfive.com']): 
+            query = "SELECT eid, job_role FROM employee WHERE email = %s AND password = %s"
+            cursor.execute(query, (email, password))
+            employee = cursor.fetchone()
+            if employee:
+                return jsonify({
+                    "eid": employee['eid'],
+                    "role": employee['job_role'],
+                }), 200
+            else:
+                return jsonify({"error": "Invalid email or password for employee"}), 401
         else:
-            return jsonify({"error": "Invalid email or password"}), 401
+            query = "SELECT ssn, fname, lname FROM customer WHERE email = %s AND password = %s"
+            cursor.execute(query, (email, password))
+            customer = cursor.fetchone()
+
+            if customer:
+                return jsonify({
+                    "ssn": customer['ssn'],
+                    "fname": customer['fname'],
+                    "lname": customer['lname']
+                }), 200
+            else:
+                return jsonify({"error": "Invalid email or password"}), 401
 
     finally:
         cursor.close()
@@ -51,6 +59,7 @@ def login():
 def register():
     data = request.json
     conn = get_db_connection()
+    conn.autocommit = False
     cursor = conn.cursor()
 
     try:
@@ -180,44 +189,82 @@ def getTransactions(user_id):
 def makeTransaction():
     try:
         data = request.json
-        print(data)
         acc_no = data["acc_no"]          
         amount = data["amount"]
         t_type = data["t_type"]
-        dest_acc_no = data["dest_acc_no"]  
-        dest_rout_no = data["dest_rout_no"] 
-        
-        conn = get_db_connection()
-        cursor = conn.cursor()
+        current_balance = data['curr_bal']
+        if (t_type=="TRANSFER"):
+            dest_rout_no = data["dest_rout_no"]
+            dest_acc_no = data["dest_acc_no"]  
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            query = """
+                INSERT INTO transactions (amount, t_type, dest_acc_no, dest_rout_no, acc_no)
+                VALUES (%s, %s, %s, %s, %s)
+            """
+            cursor.execute(query, (amount, t_type, dest_acc_no, dest_rout_no, acc_no))
+            conn.commit()
+        else:
+            loan_id = data['loan_id']
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            query = """INSERT INTO repayment (loan_id, rdate, amount)
+            VALUES (%s, NOW(), %s)
+            """
+            cursor.execute(query, (loan_id, amount))
+            query = """
+                INSERT INTO transactions (amount, t_type, acc_no)
+                VALUES (%s, %s, %s)
+            """
+            cursor.execute(query, (amount, t_type, acc_no))
+            conn.commit()
+        new_balance = current_balance - amount
         query = """
-            INSERT INTO transactions (amount, t_type, dest_acc_no, dest_rout_no, acc_no)
-            VALUES (%s, %s, %s, %s, %s)
-        """
-        print(query)
-        cursor.execute(query, (amount, t_type, dest_acc_no, dest_rout_no, acc_no))
-
-        # # 4️⃣ Update source account balance
-        # if t_type in ["withdraw", "transfer"]:
-        #     new_balance = current_balance - amount
-        # else:  # deposit
-        #     new_balance = current_balance + amount
-
-        # cursor.execute("UPDATE account SET balance = %s WHERE acc_no = %s", (new_balance, acc_no))
+                UPDATE customer c
+                JOIN opens o ON c.ssn = o.ssn
+                SET c.balance = %s
+                WHERE o.acc_no = %s
+            """
+        cursor.execute(query, (new_balance, acc_no))
         conn.commit()
         cursor.close()
         return {
-            "message": "Transaction successful"
+                "message": "Transaction successful"
         }, 200
 
     except Exception as e:
         print("ERROR making transaction:", str(e))
         return {"error": str(e)}, 500
 
-@app.route('/apply_loan', methods=['POST'])
-def applyLoan():
+@app.route('/apply_loan/<int:user_id>', methods=['POST'])
+def applyLoan(user_id):
     data = request.json
-    print(data)
-    return jsonify({"success": True})
+    loan_amt = data["loan_amt"]
+    loan_term = data["loan_term"]
+    rate = 12 
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        query = """
+            INSERT INTO loan (loan_amt, loan_term, rate)
+            VALUES (%s, %s, %s)
+        """
+        cursor.execute(query, (loan_amt, loan_term, rate))
+        conn.commit()
+        loan_id = cursor.lastrowid
+        cursor.execute(
+            "INSERT INTO takes (loan_id, ssn) VALUES (%s, %s)",
+            (loan_id, user_id)
+        )
+        conn.commit()
+        conn.close()
+
+        return jsonify({
+            "message": "Loan applied successfully",
+        }), 201
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @app.route('/get_accounts', methods=['GET'])
 def getAccounts():
@@ -263,7 +310,13 @@ def updateAccount(user_id):
     if request.method == 'DELETE':
         conn = get_db_connection()
         cursor = conn.cursor()
-        cursor.execute("DELETE FROM opens WHERE acc_no = %s", (user_id,))
+        query = "DELETE FROM account WHERE acc_no = %s"
+        cursor.execute(query, (user_id,))
+        query = """
+        DELETE FROM customer
+        WHERE ssn NOT IN (SELECT ssn FROM opens)
+        """
+        cursor.execute(query)
         conn.commit()
         conn.close()
         return jsonify({"message": "Accounts deleted successfully"}), 200
@@ -289,15 +342,121 @@ def updateAccount(user_id):
 
 @app.route('/get_loans', methods=['GET'])
 def getLoans():
-    return "loans"
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    query = """
+    SELECT 
+    l.loan_id,
+    CONCAT(c.fname, ' ', c.lname) AS customer_name,
+    l.loan_amt,
+    l.loan_term,
+    l.rate AS interest,
+    l.status
+    FROM takes t
+    JOIN customer c ON t.ssn = c.ssn
+    JOIN loan l ON t.loan_id = l.loan_id
+    WHERE l.status = 'under review'
+    ;
+    """
+    cursor.execute(query)
+    result = cursor.fetchall()
+
+    loans = []
+    for row in result:
+        loans.append([
+            row[0], 
+            row[1],  
+            float(row[2]),                 
+            float(row[3]),                
+            float(row[4]),
+            row[5]        
+        ])
+
+    cursor.close()
+    conn.close()
+
+    return loans
+
 
 @app.route('/get_user_loans/<int:user_id>', methods=['GET'])
-def get_user_loans():
-    return "loans"
+def get_user_loans(user_id):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    query = """
+    SELECT 
+    l.loan_id,
+    CONCAT(c.fname, ' ', c.lname) AS customer_name,
+    l.loan_amt,
+    l.loan_term,
+    l.rate AS interest,
+    l.status
+    FROM takes t
+    JOIN customer c ON t.ssn = c.ssn
+    JOIN loan l ON t.loan_id = l.loan_id
+    WHERE c.ssn = %s AND l.status = 'active'
+    ;
+    """
+    cursor.execute(query, (user_id, ))
+    result = cursor.fetchall()
 
-@app.route('/update_loan', methods=['DELETE', 'PATCH'])
-def updateLoan():
-    return jsonify({"success": True})
+    loans = []
+    for row in result:
+        loans.append(
+            row[0]       
+        )
+
+    cursor.close()
+    conn.close()
+    return loans
+
+@app.route('/update_loan/<int:loan_id>', methods=['DELETE', 'PATCH'])
+def updateLoan(loan_id):
+    if request.method == 'DELETE':
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM loan WHERE loan_id = %s", (loan_id,))
+        conn.commit()
+        conn.close()
+        return jsonify({"message": "Loan declined successfully"}), 200
+    elif request.method == 'PATCH':
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        query = """
+            UPDATE loan l
+            SET status = 'active'
+            WHERE loan_id = %s;
+        """
+        cursor.execute(query, (loan_id,))
+        conn.commit()
+        conn.close()
+        return jsonify({
+            "message": "Loan Approved",
+        }), 200
+    
+@app.route('/get_analytics', methods=['GET'])
+def get_analytics():
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM fantastic_five.bank_dashboard_stats")
+        result = cursor.fetchall()
+        print(result)
+        return result
+    except:
+        return "Error fetching analytics"
+    
+@app.route('/get_employees', methods=['GET'])
+def get_analytics():
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT eid, full_name, email, job_role FROM fantastic_five.employee WHERE job_role!='Bank Manager")
+        result = cursor.fetchall()
+        return result
+    except:
+        return "Error fetching employees"
+
+    
 
 def generate_debit_card_number():
     prefix = "4"

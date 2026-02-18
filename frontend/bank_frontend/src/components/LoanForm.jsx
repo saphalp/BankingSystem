@@ -1,46 +1,57 @@
-import { Button, Container, NativeSelect, NumberInput, TextInput } from '@mantine/core'
-import React, { useState } from 'react'
-import { useForm } from '@mantine/form';
+import { useState } from "react";
+import { NumberInput, Button, Group } from "@mantine/core";
+import axios from "axios";
 
-function LoanForm() {    
-    const form = useForm({
-    mode: 'uncontrolled',
-    initialValues: {
-      loanType: '',
-      income: '',
-      term: ''
+export default function LoanForm() {
+  const [loanAmt, setLoanAmt] = useState();
+  const [loanTerm, setLoanTerm] = useState();
+
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  const userId = localStorage.getItem("cid")
+  try {
+    const res = await axios.post(
+      `http://localhost:5000/apply_loan/${userId}`,
+      {
+        loan_amt: loanAmt,
+        loan_term: loanTerm,
+      }
+    );
+    alert(`Loan applied successfully!`);
+  } catch (err) {
+    if (err.response) {
+      console.error("Error applying loan:", err.response.data);
+    } else {
+      console.error("Network or server error:", err);
     }
-  });
-  return (
-    <Container>
-        <form>
-            <NativeSelect
-                required
-                label="Loan Type"
-                data={[
-                    { value: '', label: 'Select Loan Type' },
-                    { value: 'auto', label: 'Auto Loan' },
-                    { value: 'personal', label: 'Personal Loan' },
-                    { value: 'home', label: 'Home Loan' },
-                    { value: 'student', label: 'Student Loan' },
-                    ]}
-                {...form.getInputProps('loanType')}
-            />
-            <TextInput
-                label="Gross Income"
-                required
-                placeholder="$70000"
-                {...form.getInputProps('income')}
-            />
-            <NumberInput
-            label="Term (In Years)"
-            placeholder="10 years"
-            {...form.getInputProps('term')}
-            />
-            <Button my={20}> Apply </Button>
-        </form>
-    </Container>
-  )
-}
+  }
+};
 
-export default LoanForm
+  return (
+    <form onSubmit={handleSubmit} style={{ maxWidth: 400, margin: "0 auto" }}>
+      <NumberInput
+        label="Loan Amount"
+        placeholder="Enter loan amount (min $1000)"
+        value={loanAmt}
+        onChange={(val) => setLoanAmt(val)}
+        required
+        min={1000}
+        mb="md"
+      />
+
+      <NumberInput
+        label="Loan Term (years)"
+        placeholder="Enter loan term (min 1 year)"
+        value={loanTerm}
+        onChange={(val) => setLoanTerm(val)}
+        required
+        min={1}
+        mb="md"
+      />
+
+      <Group position="right" my={40}>
+        <Button type="submit">Submit</Button>
+      </Group>
+    </form>
+  );
+}

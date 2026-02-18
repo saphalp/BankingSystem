@@ -12,6 +12,7 @@ import classes from '../assets/css/LoginPage.module.css';
 import { AccountSelection } from './AccountSelection';
 import { useState } from 'react';
 import axios from "axios";
+import { useNavigate } from 'react-router-dom';
 
 
 export function SignUpForm() {
@@ -27,7 +28,7 @@ export function SignUpForm() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [accountType, setAccountType] = useState("Savings")
-
+  const navigate = useNavigate()
   const registerUser = async (e) => {
     e.preventDefault();
       try {
@@ -40,6 +41,9 @@ export function SignUpForm() {
             },
           }
         );
+        if(res.status==200){
+          navigate('/login');
+        }
       } catch (err) {
         if (err.response) {
           console.error("Login error:", err.response.data);
@@ -59,7 +63,7 @@ export function SignUpForm() {
         <form onSubmit={registerUser}>
         <TextInput label="First Name" placeholder="John" required radius="md" value={firstName} onChange={(e) => setFirstName(e.target.value)}/>
         <TextInput label="Last Name" placeholder="Doe" required radius="md" value={lastName} onChange={(e) => setLastName(e.target.value)}/>
-        <TextInput label="Date of Birth" placeholder="mm/dd/yyy" required radius="md" value={dob} onChange={(e) => setDOB(e.target.value)}/>
+        <TextInput label="Date of Birth" placeholder="YYYY-MM-DD" required radius="md" value={dob} onChange={(e) => setDOB(e.target.value)}/>
         <TextInput label="Street Address" placeholder="" required radius="md" value={streetAddress} onChange={(e) => setStreetAddress(e.target.value)}/>
         <TextInput label="City" placeholder="" required radius="md" value={city} onChange={(e) => setCity(e.target.value)}/>
         <TextInput label="State" placeholder="" required radius="md" value={state} onChange={(e) => setState(e.target.value)}/>

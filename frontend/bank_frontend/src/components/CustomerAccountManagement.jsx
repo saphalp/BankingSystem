@@ -7,9 +7,11 @@ import axios from "axios";
 
 function CustomerAccountManagement() {
   const [accounts, setAccounts] = useState()
+  const role = localStorage.getItem("role")
    const close_account = async (row) => {
       try{
         const res = await axios.delete(`http://127.0.0.1:5000/update_account/${row.row[2]}`);
+        fetchAllUsers();
       } catch(err){
         console.error(err.response?.data || err.message);
       }
@@ -18,13 +20,13 @@ function CustomerAccountManagement() {
    const issue_debit_card = async (row) => {
       try{
         const res = await axios.patch(`http://127.0.0.1:5000/update_account/${row.row[2]}`);
+        fetchAllUsers();
       } catch(err){
         console.error(err.response?.data || err.message);
       }
    }
 
-   useEffect(() => {
-    const fetchAllUsers = async () => {
+   const fetchAllUsers = async () => {
       try {
       const res = await axios.get(
         `http://127.0.0.1:5000/get_accounts`
@@ -34,6 +36,8 @@ function CustomerAccountManagement() {
       console.error(err.response?.data || err.message);
     }
     }
+
+   useEffect(() => {
     fetchAllUsers();
    }, [])
 
@@ -62,6 +66,8 @@ function CustomerAccountManagement() {
     ]
 
     return (
+      <>
+      {role=="Customer Service"?
   <Container my={30}>
     <Center>
       <Title>Manage Customer Accounts</Title>
@@ -71,7 +77,8 @@ function CustomerAccountManagement() {
       table_layout={account_mgmt_table}
       table_data={accounts}
     />: <></>}
-  </Container>
+  </Container>:null}
+  </>
 ) 
 
 }

@@ -36,8 +36,24 @@ export function LoginForm() {
     if(res.status==200){
       setError(null)
       const data = res.data
+      if(data.role){
+        localStorage.clear()
+        localStorage.setItem("role", data.role)
+        if(data.role=='Bank Manager'){
+          navigate('/bank_management')
+        }else if(data.role=='Loan Manager'){
+          navigate('/loan_management')
+        }else if(data.role=='Customer Service'){
+          navigate('/customer_service')
+        }
+        else{
+          setError("Role not assigned. Contact HR Manager")
+        }
+      }else{
+      localStorage.clear()
       localStorage.setItem("cid", data.ssn)
       navigate('/account_management')
+      }
     }
     else{
       console.log("Some error")
