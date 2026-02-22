@@ -1,19 +1,20 @@
 import React, { useEffect, useState } from 'react'
 import { CustomTable } from './CustomTable'
-import { Container, Title, Center } from '@mantine/core'
+import { Container, Title, Center, Alert } from '@mantine/core'
 import axios from "axios";
 
 
 
 function CustomerAccountManagement() {
   const [accounts, setAccounts] = useState()
+  const [error, setError] = useState()
   const role = localStorage.getItem("role")
    const close_account = async (row) => {
       try{
         const res = await axios.delete(`http://127.0.0.1:5000/update_account/${row.row[2]}`);
         fetchAllUsers();
       } catch(err){
-        console.error(err.response?.data || err.message);
+        setError(err.response.data.error);
       }
    }
 
@@ -69,6 +70,17 @@ function CustomerAccountManagement() {
       <>
       {role=="Customer Service"?
   <Container my={30}>
+    {error ? (
+            <Alert 
+              variant="light" 
+              color="red" 
+              title="Error deleting account" 
+              icon={null}
+              mb={20}
+            >
+              {error}
+            </Alert>
+          ) : null}
     <Center>
       <Title>Manage Customer Accounts</Title>
     </Center>

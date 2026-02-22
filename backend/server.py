@@ -316,12 +316,14 @@ def updateAccount(user_id):
         DELETE FROM customer
         WHERE ssn NOT IN (SELECT ssn FROM opens)
         """
-        cursor.execute(query)
-        conn.commit()
-        conn.close()
-        return jsonify({"message": "Accounts deleted successfully"}), 200
+        try:    
+            cursor.execute(query)
+            conn.commit()
+            conn.close()
+            return jsonify({"message": "Accounts deleted successfully"}), 200
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
     elif request.method == 'PATCH':
-        print("reached patch")
         card_number = generate_debit_card_number()
         conn = get_db_connection()
         cursor = conn.cursor()
@@ -419,19 +421,33 @@ def updateLoan(loan_id):
         conn.close()
         return jsonify({"message": "Loan declined successfully"}), 200
     elif request.method == 'PATCH':
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        query = """
-            UPDATE loan l
-            SET status = 'active'
-            WHERE loan_id = %s;
-        """
-        cursor.execute(query, (loan_id,))
-        conn.commit()
-        conn.close()
-        return jsonify({
-            "message": "Loan Approved",
-        }), 200
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            query = """
+                UPDATE loan
+                SET status = 'active'
+                WHERE loan_id = %s;
+            """
+            cursor.execute(query, (loan_id,))
+            query = """
+                UPDATE customer c
+                JOIN takes t ON c.ssn = t.ssn
+                JOIN loan l ON l.loan_id = t.loan_id
+                SET c.balance = c.balance + l.loan_amt
+                WHERE l.loan_id = %s;
+            """
+            cursor.execute(query, (loan_id,))
+
+            conn.commit()
+
+        except Exception as e:
+            conn.rollback()
+            return jsonify({"error": str(e)}), 400
+
+        finally:
+            conn.close()
+            return "Loan approved"
     
 @app.route('/get_analytics', methods=['GET'])
 def get_analytics():
